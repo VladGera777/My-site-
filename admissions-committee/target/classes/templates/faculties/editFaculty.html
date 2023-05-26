@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layout}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title >Редагувати факультет</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row h-100 justify-content-center align-items-center">
+        <div class="col-10 col-md-8 col-lg-6">
+            <h1 class="py-3 text-center" >Редагувати факультет</h1>
+            <form class="text-dark" th:action="@{/faculties/{id}/edit(id = ${facultyDTO.getId})}" th:method="put"
+                  th:object="${facultyDTO}">
+                <div class="form-floating mb-3 mt-3">
+                    <input class="form-control" id="name" placeholder="*{name}" required th:field="*{name}"
+                           type="text"/>
+                    <label for="name" th:text="#{faculty.name}">Faculty Name</label>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-floating mb-3 mt-3">
+                            <input class="form-control" id="budget" placeholder="*{budgetPlaces}" required
+                                   th:field="*{budgetPlaces}"
+                                   type="text"/>
+                            <label for="budget" th:text="#{faculty.budget}">Budget places</label>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="col">
+                        <div class="form-floating mb-3 mt-3">
+                            <input class="form-control" id="total" placeholder="*{totalPlaces}" required
+                                   th:field="*{totalPlaces}"
+                                   type="text"/>
+                            <label for="total" th:text="#{faculty.total}">Total places</label>
+                        </div>
+                    </div>
+                </div>
+                <br><br>
+                <div class="text-center"><input class="btn btn-primary" th:value="#{submit}" type="submit"></div>
+            </form>
+            <!--EDIT + ADD SUBJECTS-->
+            <h2 class="py-3 text-center" >Необхідні предмети</h2>
+            <div class="text-center">
+                <div th:if="${subjects == null} or ${subjects.isEmpty}">
+                    <h6 class="text-center" >
+                        Ще не додано жодного предмета</h6>
+                </div>
+                <table class="table table-hover table-light table-responsive">
+                    <tbody class="align-middle">
+                    <div th:if="${subjects != null}">
+                        <th:block th:each="subject:${subjects}">
+                            <tr>
+                                <td th:text="${subject.name}"></td>
+                                <td><a class="btn btn-danger" role="button"
+                                       th:href="@{/faculties/{facultyId}/delete-subject/{subjectId}
+                                (facultyId = ${facultyDTO.id}, subjectId=${subject.id})}"
+                                ><i class="bi bi-trash"></i></a></td>
+                            </tr>
+                        </th:block>
+                    </div>
+                    </tbody>
+                </table>
+            </div>
+            <form class="text-dark" method="post"
+                  th:action="@{/faculties/{id}/add-subject (id = ${facultyDTO.id})}">
+                <select aria-label="Select subject from list" class="form-select" name="chosenSubject">
+                    <option disabled selected>Оберіть предмет зі списку</option>
+                    <option th:each="subject:${allSubjects}" th:text="${subject.name}"
+                            th:value="${subject.id}"></option>
+                </select>
+                <br>
+                <button class="btn btn-success" type="submit"><i class="bi bi-plus"></i> Додати</button>
+            </form>
+            <form class="text-dark" method="post"
+                  th:action="@{/faculties/{id}/new-subject (id = ${facultyDTO.id})}">
+                <h5 class="py-3 text-center text-light">Немає необхідного предмету в списку? Додати новий: </h5>
+                <input class="form-control" id="subjectName" name="subjectName" placeholder="Назва предмету"
+                       required type="text"/>
+                <br>
+                <button class="btn btn-success" type="submit"><i class="bi bi-plus"></i> Додати</button>
+            </form>
+            <br>
+            <div class="text-center">
+                <a class="btn btn-primary" role="button"
+                   th:href="@{/faculties/{id}(id = ${facultyDTO.getId})}"
+                   >Переглянути інформацію про факультет</a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

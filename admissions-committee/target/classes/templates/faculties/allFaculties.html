@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorate="~{layout}" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="#{faculties}">Faculties</title>
+</head>
+<body>
+<div class="py-4 bg-light" layout:fragment="content">
+    <div class="row h-100 justify-content-center align-items-center">
+        <div class="col-10 px-3">
+            <h1 class="py-3 text-center text-dark" th:text="#{faculty.list}">List of faculties</h1>
+            <a class="btn btn-outline-primary" role="button" sec:authorize="hasAnyRole('ROLE_ADMIN')"
+               th:href="@{/faculties/new}" th:text="#{add}">Add new</a>
+            <!--            Items per page and sorting-->
+            <div class="btn-group dropdown">
+                <button aria-expanded="false" class="btn btn-outline-secondary" data-bs-toggle="dropdown"
+                        type="button">
+                    <span class="btn-label" th:text="#{items.page}">Items per page</span></button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" th:href="${@replaceOrAddParam.apply('size', '5')}">5</a></li>
+                    <li><a class="dropdown-item" th:href="${@replaceOrAddParam.apply('size', '10')}">10</a></li>
+                    <li><a class="dropdown-item" th:href="${@replaceOrAddParam.apply('size', '20')}">20</a></li>
+                    <li><a class="dropdown-item" th:href="${@replaceOrAddParam.apply('size', '30')}">30</a></li>
+                    <li><a class="dropdown-item" th:href="${@replaceOrAddParam.apply('size', '50')}">50</a></li>
+                    <li><a class="dropdown-item"
+                           th:href="${@replaceOrAddParam.apply('size', '100')}">100</a></li>
+                </ul>
+            </div>
+            <div class="btn-group dropdown">
+                <button aria-expanded="false" class="btn btn-outline-secondary" data-bs-toggle="dropdown"
+                        type="button">
+                    <span class="btn-label" th:text="#{sortby}">Sort by</span></button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item"
+                           th:href="${@replaceOrAddParam.apply('sortBy', 'name')}"
+                           th:text="#{faculty.name}">Name</a></li>
+                    <li><a class="dropdown-item"
+                           th:href="${@replaceOrAddParam.apply('sortBy', 'budgetPlaces')}"
+                           th:text="#{faculty.budget}">Budget places</a></li>
+                    <li><a class="dropdown-item"
+                           th:href="${@replaceOrAddParam.apply('sortBy', 'totalPlaces')}"
+                           th:text="#{faculty.total}">Total places</a></li>
+                    <!--                        <li><a class="dropdown-item"
+                    th:href="${@replaceOrAddParam.apply('sortBy', 'date')}">Creation date</a></li>-->
+                </ul>
+            </div>
+            <div class="btn-group dropdown">
+                <button aria-expanded="false" class="btn btn-outline-secondary" data-bs-toggle="dropdown"
+                        type="button">
+                        <span class="btn-label"><i class="bi bi-arrow-down-up"
+                                                   th:text="#{sort}">Sort order</i></span></button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" th:href="${@replaceOrAddParam.apply('sort', 'ASC')}"
+                           th:text="#{asc}">Ascending</a></li>
+                    <li><a class="dropdown-item" th:href="${@replaceOrAddParam.apply('sort', 'DESC')}"
+                           th:text="#{desc}">Descending</a></li>
+                </ul>
+            </div>
+            <div class="py-3 table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th th:text="#{faculty.name}">Faculty's name</th>
+                        <th th:text="#{faculty.budget}">Nr of budget places</th>
+                        <th th:text="#{faculty.total}">Total nr of places</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="faculty : ${faculties.content}">
+                        <td th:text="${faculty.name}">Name</td>
+                        <td th:text="${faculty.budgetPlaces}">Budget places</td>
+                        <td th:text="${faculty.totalPlaces}">Total places</td>
+                        <td><a class="btn btn-outline-primary"
+                               th:href="@{/faculties/{id}(id = ${faculty.getId})}" th:text="#{view}">View</a></td>
+                        <td><a class="btn btn-success"
+                               onClick="return confirm(th:text='#{confirm.apply}')"
+                               role="button"
+                               sec:authorize="hasRole('ROLE_USER')"
+                               th:href="@{/faculties/{id}/new-request (id = ${faculty.getId})}"
+                               th:text="#{apply}">Apply</a></td>
+                        <td><a class="btn btn-outline-info" sec:authorize="hasRole('ROLE_ADMIN')"
+                               th:href="@{/faculties/{id}/edit (id = ${faculty.getId})}" th:text="#{edit}">Edit</a>
+                        </td>
+                        <td>
+                            <form sec:authorize="hasRole('ROLE_ADMIN')"
+                                  th:action="@{/faculties/delete/{id}(id = ${faculty.getId})}"
+                                  th:method="delete" th:object="${faculty}">
+                                <button class="btn btn-outline-dark"
+                                        onClick="return confirm(th:text='#{confirm.delete}')"
+                                        th:text="#{delete}" type="submit">Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!--            Navigation-->
+            <nav aria-label="Page navigation for list of faculties" class="pagination  justify-content-center"
+                 th:if="${totalPages > 1}">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item">
+                        <a aria-label="Previous"
+                           class="page-link"
+                           th:href="@{/faculties(size=${faculties.size},
+                           sort=${sort}, sortBy=${sortBy},
+                           page=${currentPage-1 > totalPages ? totalPages-1 : currentPage-1})}">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only" th:text="#{previous}">Previous</span>
+                        </a>
+                    </li>
+                    <div th:each="i: ${#numbers.sequence(1, totalPages)}">
+                        <li class="page-item"><a th:class="page-link"
+                                                 th:href="@{/faculties(size=${faculties.size},
+                                                 sort=${sort == null ? 'name' : sort},
+                                                 sortBy=${sortBy},
+                                                 page=${i})}"
+                                                 th:text=${i}></a></li>
+                    </div>
+                    <li class="page-item">
+                        <a aria-label="Next"
+                           class="page-link"
+                           th:href="@{/faculties(size=${faculties.size},
+                           sort=${sort}, sortBy=${sortBy},
+                           page=${currentPage+1 > totalPages ? totalPages : currentPage+1})}">
+                            <span class="sr-only" th:text="#{next}">Next</span>
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+</body>
+</html>

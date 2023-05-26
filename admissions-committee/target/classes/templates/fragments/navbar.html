@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html th:lang="${#locale.language}" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Navigation bar</title>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark" th:fragment="navbar">
+    <div class="container px-5">
+        <a class="navbar-brand" th:href="@{/}" th:text="#{app.name}">Admissions Committee</a>
+        <button aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+                class="navbar-toggler"
+                data-bs-target="#navbarSupportedContent"
+                data-bs-toggle="collapse"
+                type="button">
+            <span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a aria-current="page" class="nav-link active" th:href="@{/}"
+                                        >Домашня сторінка</a></li>
+                <li class="nav-item dropdown">
+                    <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+                       id="navbarDropdownFaculties" role="button"> Факультети </a>
+                    <ul aria-labelledby="navbarDropdown" class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" th:href="@{/faculties}"
+                              >Список факультетів</a></li>
+                        <li><a class="dropdown-item" sec:authorize="hasRole('ROLE_ADMIN')"
+                               th:href="@{/request/all}"
+                               >Список заяв</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a class="nav-link" sec:authorize="hasRole('ROLE_ADMIN')"
+                                        th:href="@{/applicant/all}" >Абітурієнти</a></li>
+                <li class="nav-item dropdown">
+                    <a aria-expanded="false" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#"
+                       id="navbarDropdownUser"
+                       role="button" sec:authorize="isAuthenticated()"
+                       th:text="#{greeting} + ', ' + ${#authentication.name}"></a>
+                    <ul aria-labelledby="navbarDropdown" class="dropdown-menu dropdown-menu-end"
+                        sec:authorize="isAuthenticated()">
+                        <li><a class="dropdown-item"
+                               th:href="@{/applicant/{username} (username = ${#authentication.principal.username})}"
+                               >Профіль</a></li>
+                        <li><a class="dropdown-item"
+                               th:href="@{/user/{username}/edit (username = ${#authentication.principal.username})}"
+                               >Редагувати аккаунт</a></li>
+                        <li><a class="dropdown-item" sec:authorize="hasRole('ROLE_USER')"
+                               th:href="@{/applicant/{username}/edit
+                               (username = ${#authentication.principal.username})}"
+                               >Редагувати аккаунт</a></li>
+                        <li>
+                            <hr class="dropdown-divider"/>
+                        </li>
+                        <li><a class="dropdown-item" th:href="@{/logout}" >Вийти</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item"><a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/login}"
+                                        >Вхід</a>
+                </li>
+                <li class="nav-item"><a class="nav-link" sec:authorize="isAnonymous()"
+                                        th:href="@{/register}" >Зареєструватися</a></li>
+                <li class="nav-item"><a class="nav-link" sec:authorize="isAuthenticated()" th:href="@{/logout}"
+                                        >Вийти</a></li>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</body>
+</html>
